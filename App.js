@@ -1,20 +1,50 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import AuthContext, { AuthProvider } from "./contexts/AuthContext";
+import Home from "./pages/home/Home";
+import Organizations from './pages/organizations/Organizations';
+import Navigation from './components/navigation/Navigation';
+import OrgCreate from './pages/orgcreate/OrgCreate';
+import Login from "./pages/login/Login";
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useContext } from "react";
 
-export default function App() {
+const Stack = createNativeStackNavigator();
+
+const App = () => {
+  const { accessToken, setTokens } = useContext(AuthContext);
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+    <NavigationContainer>
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+      <Stack.Navigator>
+        {accessToken ? (
+          <>
+            <Stack.Screen name="Home" component={Home} options={{title: "Asosiy"}} />
+            <Stack.Screen name="Organizations" component={Organizations} options={{title: "Tashkilotlar"}} />
+            <Stack.Screen name="OrgCreate" component={OrgCreate} options={{title: "Yangi Tashkilot Qo'shish"}} />
+          </>
+        ) : (
+          <Stack.Screen
+            name="Login"
+            options={{ headerShown: false }}
+          >
+            {(props) => <Login {...props} setTokens={setTokens} />}
+          </Stack.Screen>
+        )}
+      </Stack.Navigator>
+      {accessToken ? <Navigation /> : <></>}
+
+
+    </NavigationContainer>
+  );
+};
+
+const AppWrapper = () => {
+  return (
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  );
+};
+
+export default AppWrapper;

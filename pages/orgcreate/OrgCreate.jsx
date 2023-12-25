@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
-import { View, ScrollView, Text, TextInput, StyleSheet, Button } from 'react-native';
-import ImagePicker from 'react-native-image-picker';
+import React, {useState, useContext, useEffect} from 'react';
+import {View, ScrollView, Text, TextInput, StyleSheet} from 'react-native';
 
 import Btn from '../../components/btn/Btn';
+import ImageUpload from "../../components/imagepicker/ImagePicker";
+import SelectInput from "../../components/selectinput/SelectInput";
 
-// TODO: work on image picker
+import useFetch from "../../hooks/useFetch";
+import AuthContext from "../../contexts/AuthContext";
 
+// TODO: fix problem with territory field and handle the org_type field.
+// TODO: handle the formData submission.
 const OrgCreate = () => {
+    const {accessToken} = useContext(AuthContext);
     const [formData, setFormData] = useState({
         image: '',
         region: '',
@@ -25,6 +30,18 @@ const OrgCreate = () => {
         passport: '',
     });
 
+    function getRegionList() {
+        const {data, isLoading, error} = useFetch("region", {}, accessToken, "");
+        return data;
+    }
+
+    function getTerritoryList(regionId) {
+        const {data, isLoading, error} = useFetch("territory", {"region": regionId}, accessToken, "");
+        return data
+    }
+
+    const nonTextFields = ['image', 'region', 'territory', 'org_type', 'license', 'passport'];
+
     const handleInputChange = (field, value) => {
         setFormData({
             ...formData,
@@ -37,41 +54,35 @@ const OrgCreate = () => {
         console.log('Form Data:', formData);
     };
 
-    const [selectedImage, setSelectedImage] = useState(null);
-
-    const launchImagePicker = () => {
-        ImagePicker.showImagePicker(options, (response) => {
-          if (response.didCancel) {
-            console.log('User cancelled image picker');
-          } else if (response.error) {
-            console.log('ImagePicker Error: ', response.error);
-          } else if (response.customButton) {
-            console.log('User tapped custom button: ', response.customButton);
-          } else {
-            const source = { uri: response.uri };
-            // Do something with the selected image source
-          }
-        });
-      };
-      
-
     return (
         <ScrollView>
             {/* Render input fields for each data field */}
             <View style={styles.container}>
-                {Object.keys(formData).map((field) => (
-                    <View key={field} style={styles.inputContainer}>
-                        <Text>{field.replace(/_/g, ' ').toUpperCase()}</Text>
-                        <TextInput
-                            style={styles.input}
-                            value={formData[field]}
-                            onChangeText={(text) => handleInputChange(field, text)}
-                        />
-                    </View>
-                ))}
-                 <Button title="Select Image" onPress={launchImagePicker} />
+                <ImageUpload keyTitle="image" handleInputChange={handleInputChange}/>
+                <SelectInput keyTitle="region" handleInputChange={handleInputChange}
+                             options={getRegionList()}/>
+                <SelectInput keyTitle="territory" handleInputChange={handleInputChange}
+                             options={getTerritoryList(formData['region'])}/>
+                <SelectInput keyTitle="org_type" handleInputChange={handleInputChange}
+                             options={[{title: 'Type 1', id: 'type1'}, {title: 'Type 2', id: 'type2'}]}/>
+                {Object.keys(formData).map((field) => {
+                    if (!nonTextFields.includes(field)) {
+                        return (
+                            <View key={field} style={styles.inputContainer}>
+                                <Text>{field.replace(/_/g, ' ').toUpperCase()}</Text>
+                                <TextInput
+                                    style={styles.input}
+                                    value={formData[field]}
+                                    onChangeText={(text) => handleInputChange(field, text)}
+                                />
+                            </View>
+                        );
+                    }
 
-                <Btn title="Submit" onPress={handleSubmit} />
+                })}
+                <ImageUpload keyTitle="license" handleInputChange={handleInputChange}/>
+                <ImageUpload keyTitle="passport" handleInputChange={handleInputChange}/>
+                <Btn title="Yaratish" onPress={handleSubmit}/>
             </View>
         </ScrollView>
     );
@@ -83,7 +94,7 @@ const styles = StyleSheet.create({
         padding: 15,
         margin: 15,
         backgroundColor: "#ffffff",
-        borderRadius: 8
+        borderRadius: 8,
     },
     inputContainer: {
         marginBottom: 16,

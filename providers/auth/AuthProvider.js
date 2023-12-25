@@ -2,11 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import Login from '../../pages/login/Login';
-import Logout from '../../components/logoutbtn/LogoutBtn';
 import axios from 'axios';
 import Index from '../../app';
-import { Text } from 'react-native';
-const API_URL = 'https://unimarq.jprq.app/ru/api/v1/auth/';
+const API_URL = 'http://192.168.100.168:8000/ru/api/v1/auth/';
 
 const AuthProvider = () => {
     const [accessToken, setAccessToken] = useState(null);

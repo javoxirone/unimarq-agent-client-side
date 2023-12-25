@@ -8,7 +8,7 @@ const Login = ({ navigation, setTokens }) => {
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post('https://unimarq.jprq.app/ru/api/v1/auth/token/', {
+            const response = await axios.post('http://192.168.100.168:8000/ru/api/v1/auth/token/', {
                 username,
                 password,
             });

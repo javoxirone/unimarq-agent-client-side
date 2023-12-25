@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const useFetch = (endpoint, query, token) => {
+const useFetch = (endpoint, query, token, root="agent/") => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const options = {
     method: "GET",
-    url: `https://unimarq.jprq.app/api/v1/agent/${endpoint}`,
+    url: `http://192.168.100.168:8000/api/v1/${root}${endpoint}`,
     headers: {
       "X-RapidAPI-Key": '',
-      "X-RapidAPI-Host": "unimarq.jprq.app",
+      "X-RapidAPI-Host": "192.168.100.168:8000",
       "Authorization": `Bearer ${token}`
     },
     params: { ...query },

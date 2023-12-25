@@ -8,7 +8,7 @@ const Organizations = ({ navigation }) => {
     const { accessToken } = useContext(AuthContext);
     const { data, isLoading, error } = useFetch("organization", {}, accessToken);
     return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 16, }}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 16, gap: 12, }}>
             <Btn title="Yangi tashkilot qo'shish +" onPress={() => navigation.navigate("OrgCreate")} />
             {isLoading ? (
                 <ActivityIndicator size='large' color={"#312651"} />

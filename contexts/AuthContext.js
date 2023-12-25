@@ -6,7 +6,7 @@ import "core-js/stable/atob";
 import { jwtDecode } from "jwt-decode";
 const AuthContext = createContext();
 
-const API_URL = 'https://unimarq.jprq.app/ru/api/v1/auth/';
+const API_URL = 'http://192.168.100.168:8000/ru/api/v1/auth/';
 
 export const AuthProvider = ({ children }) => {
     const [accessToken, setAccessToken] = useState(null);
